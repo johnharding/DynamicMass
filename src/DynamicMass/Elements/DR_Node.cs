@@ -218,7 +218,7 @@ namespace DynamicMass.Elements
                 }
 
                 triMesh.Faces.AddFace(0, 1, 2);
-                Vector3f myVec = triMesh.FaceNormals[0];
+                //Vector3f myVec = triMesh.FaceNormals[0];
 
                 Mass += Rhino.Geometry.AreaMassProperties.Compute(triMesh).Area * massValue;
             }

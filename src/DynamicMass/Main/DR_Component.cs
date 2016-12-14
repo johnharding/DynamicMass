@@ -403,10 +403,10 @@ namespace DynamicMass.Main
         }
 
 
-        public override void CreateAttributes()
-        {
-            m_attributes = new DR_Attributes(this);
-        }
+        //public override void CreateAttributes()
+        //{
+           // m_attributes = new DR_Attributes(this);
+        //}
 
     }
 }
