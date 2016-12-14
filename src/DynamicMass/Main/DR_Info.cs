@@ -22,7 +22,7 @@ namespace DynamicMass.Main
         public override string Version
         {
             //first release
-            get { return "0.2"; }
+            get { return "0.3.0"; }
         }
         public override Guid Id
         {
