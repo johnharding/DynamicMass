@@ -21,6 +21,7 @@ namespace DynamicMass.Main
         private List<Point3d> myNodes = new List<Point3d>();
         private List<DR_Node> localNodes = new List<DR_Node>();
         private List<Point3d> outNodes = new List<Point3d>();
+        private List<Vector3d> myPointLoads = new List<Vector3d>();
 
         private List<Point3d> mySupports = new List<Point3d>();
         private List<double> myStiffnesses = new List<double>();
@@ -65,6 +66,9 @@ namespace DynamicMass.Main
             pManager.AddLineParameter("Springs", "Springs", "The initial springs as lines", GH_ParamAccess.list);
             pManager.AddPointParameter("Supports", "Supports", "A list of support points (pinned)", GH_ParamAccess.list);
 
+            // Point loads
+            pManager.AddVectorParameter("PointLoads", "PointLoads", "Optional point loads (N)", GH_ParamAccess.list, new Vector3d(0.0, 0.0, 0.0));
+
             // Springs
             pManager.AddNumberParameter("Stiffnesses", "Stiffnesses", "Stiffness constants for each spring (N/m)", GH_ParamAccess.list, 0.1);
             pManager.AddNumberParameter("NatLengths", "NatLengths", "Natural lengths of each spring", GH_ParamAccess.list, 0.0);
@@ -80,6 +84,9 @@ namespace DynamicMass.Main
 
             // Reset
             pManager.AddBooleanParameter("Reset", "Reset", "Reset the system", GH_ParamAccess.item, false);
+
+            // Point loads are optional
+            pManager[3].Optional = true;
         }
 
         /// <summary>
@@ -127,6 +134,7 @@ namespace DynamicMass.Main
             if (counter == 0)
             {
                 myNodes.Clear();
+                myPointLoads.Clear();
                 mySupports.Clear();
                 myStiffnesses.Clear();
                 myNatLengths.Clear();
@@ -141,6 +149,7 @@ namespace DynamicMass.Main
                 DA.GetDataList<Point3d>("Nodes", myNodes);
                 DA.GetDataList<Line>("Springs", myBars);
                 DA.GetDataList<Point3d>("Supports", mySupports);
+                DA.GetDataList<Vector3d>("PointLoads", myPointLoads);
 
                 DA.GetDataList<double>("Stiffnesses", myStiffnesses);
                 DA.GetDataList<double>("NatLengths", myNatLengths);
@@ -268,8 +277,6 @@ namespace DynamicMass.Main
             }
 
 
-
-
             // Now run the simulation
             ReLaX();
             counter++;
@@ -359,13 +366,25 @@ namespace DynamicMass.Main
                         localNodes[i].AreaMass(localNodes, myMassList[i]);
                     }
                     break;
+
+                case 3:
+                    for (int i = 0; i < localBars.Count; i++)
+                    {
+                        localBars[i].LinearSquareMass(localNodes, myMassList);
+                    }
+                    break;
             }
 
 
-            // 4. Apply gravity using the correct masess and damp the system
+            // 4. Apply gravity using the correct masess, optional point loads and damp the system
+            // Check we have some point loads to use:
+            bool PointLoadsActive = false;
+            if (myPointLoads.Count == localNodes.Count) PointLoadsActive = true;
+
             for (int i = 0; i < localNodes.Count; i++)
             {
                 localNodes[i].Gravity(g);
+                if (PointLoadsActive) localNodes[i].PointLoad(myPointLoads[i]);
                 localNodes[i].Damp(d);
             }
 

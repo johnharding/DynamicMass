@@ -110,6 +110,10 @@ namespace DynamicMass.Elements
                     Mass = 0.0;
                     break;
 
+                case 3:
+                    Mass = 0.0;
+                    break;
+
                 default:
                     Mass = 0.0;
                     break;
@@ -125,6 +129,19 @@ namespace DynamicMass.Elements
         {
             Vel += new Vector3d(0, 0, Mass * g);
         }
+
+
+        /// <summary>
+        /// Add point load in N
+        /// </summary>
+        /// <param name="pLoad"></param>
+        public void PointLoad(Vector3d pLoad)
+        {
+            Vel += pLoad;
+        }
+
+
+
         /// <summary>
         /// Wind load
         /// </summary>
@@ -134,14 +151,6 @@ namespace DynamicMass.Elements
             Vel += new Vector3d(windLoader, 0, 0);
         }
 
-        /// <summary>
-        /// Vertical dead load (these should just be imposed vector loads)
-        /// </summary>
-        /// <param name="deadLoad"></param>
-        public void Dead(double deadLoad)
-        {
-            Vel += new Vector3d(0, 0, deadLoad);
-        }
 
         /// <summary>
         /// Clear the list of neighbouring nodes
@@ -194,6 +203,11 @@ namespace DynamicMass.Elements
 
                 // reset mass used for dynamic methods
                 case 2:
+                    Mass = 0.0;
+                    break;
+
+                // reset mass used for dynamic methods
+                case 3:
                     Mass = 0.0;
                     break;
             }

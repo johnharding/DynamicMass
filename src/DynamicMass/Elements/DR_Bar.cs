@@ -204,6 +204,24 @@ namespace DynamicMass.Elements
         }
 
 
+        public void LinearSquareMass(List<DR_Node> thisNode, List<double> massValue)
+        {
+
+            thisNode[I1].Mass += Math.Pow(massValue[I1] * L / 2, 2);
+            thisNode[I2].Mass += Math.Pow(massValue[I2] * L / 2, 2);
+
+
+            //dynamic mass split between nodes
+
+            //assumed mass per unit length for each node
+            //thisNode[I1].Stress += Tension;
+            //thisNode[I2].Stress += Tension;
+
+            //Set the stress
+            //Stress = Tension / Area;
+        }
+
+
 
         public void NodalNeighbours(List<DR_Node> thisNode)
         {
